@@ -214,7 +214,7 @@ class ChromeTest(unittest.TestCase):
         for i in rewiew_score_of_hotels:
             self.assertGreaterEqual(float(i.get_attribute('data-score')), 8)
 
-    def test_specify_booking_date_to_see_booking_price(self):
+    def test_specify_booking_date_to_see_price(self):
         """
             Scenario 4. User is required to specify booking date to see booking price
             1. choose any city from the menu below
@@ -228,6 +228,7 @@ class ChromeTest(unittest.TestCase):
             4. Submit search form
             Expect: each result entry booking price or banner saying no free places
         """
+
         driver = self.driver
         driver.get("http://www.booking.com")
         wait = WebDriverWait(driver, 10)
@@ -236,13 +237,46 @@ class ChromeTest(unittest.TestCase):
                 (By.XPATH,
                  "//div[@class='bicon bicon-aclose header-signin-prompt__close']")
             ))
+        driver.find_element_by_id('ss').send_keys("Kiev Ukraine")
+        submit = driver.find_element_by_xpath("//div[@class='xp__button']")
+        submit.click()
+        time.sleep(4)
 
-        city_input = driver.find_element_by_id('ss').send_keys("Kiev")
-        driver.find_element_by_id('xp__guests__toggle').click()
+        wait.until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR,
+                 "div.sb-searchbox__outer.sb-searchbox-universal")
+            ))
+        
+
+        close_calendar = wait.until(
+            EC.element_to_be_clickable(
+                (By.XPATH,
+                 "//button[@class='c2-calendar-close-button c2-calendar-close-button-clearappearance']")
+            ))
+        close_calendar.click()
+
+        hotel_list = driver.find_element_by_xpath("//div[@data-block-id='hotel_list']")
+        self.assertIsNotNone(hotel_list)
+        show_price_button = driver.find_element_by_xpath("//button[@class='sr-cta-button-row sr-cta-button-bottom-spacing sr-cta-button-top-spacing']")
+        show_price_button.click()
+        time.sleep(1)
+        driver.find_element_by_xpath(
+            "//td[@class='c2-day c2-day-s-today']").click()
+        time.sleep(3)
+        show_price_button.click()
+        price = wait.until(
+            EC.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[@class='js_rackrate_animation_anchor smart_price_style gray-icon b_bigger_tag animated']")
+            ))
+        self.assertIsNotNone(price)
 
     def tearDown(self):
         self.driver.close()
 
+class FirefoxTest(unittest.TestCase):
+    pass
 
 if __name__ == "__main__":
     unittest.main()
