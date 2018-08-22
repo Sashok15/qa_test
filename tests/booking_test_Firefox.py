@@ -2,6 +2,7 @@ import unittest
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
@@ -9,12 +10,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver import ChromeOptions, Chrome
 
 
-class ChromeTest(unittest.TestCase):
+class FirefoxTest(unittest.TestCase):
 
     def setUp(self):
-        opts = ChromeOptions()
-        opts.add_experimental_option("detach", True)
-        self.driver = webdriver.Chrome(options=opts)
+        # opts = ChromeOptions()
+        # opts.add_experimental_option("detach", True)
+        # self.driver = webdriver.Chrome(options=opts)
+        self.driver = webdriver.Firefox()
 
     def quantity_children(self):
         quantity_age_children = self.driver.find_elements_by_xpath(
@@ -68,7 +70,7 @@ class ChromeTest(unittest.TestCase):
                  "//div[@class='bicon bicon-aclose header-signin-prompt__close']")
             ))
 
-        driver.find_element_by_xpath("//div[data-command='noop']")
+        # driver.find_element_by_xpath("//div[@data-command='noop']")
 
         driver.find_element_by_id('xp__guests__toggle').click()
         elem_group_children = Select(
@@ -128,8 +130,9 @@ class ChromeTest(unittest.TestCase):
 
         driver.find_element_by_xpath(
             "//div[@class='xp__dates-inner xp__dates__checkin']").click()
+        time.sleep(2)
         driver.find_element_by_xpath(
-            "//td[@class='c2-day c2-day-s-today']").click()
+            "//td[@class='c2-day c2-day-s-today").click()
         driver.find_element_by_xpath(
             "//div[@class='xp__dates-inner xp__dates__checkout']").click()
         # driver.find_element_by_xpath("//td[@data-id='1535587200000']").click()
@@ -144,7 +147,7 @@ class ChromeTest(unittest.TestCase):
 
         time.sleep(5)
         city_submit = driver.find_element_by_name('ss').get_attribute("value")
-        self.assertEqual(city_input, city_submit)
+        self.assertEqual('Kiev', city_submit)
 
         # s_date_value_from_form = self.get_input_values_from_date('checkin_monthday', 'checkin_month', 'checkin_year')
         # self.assertEqual(s_date_submit, s_date_value_from_form)
@@ -258,7 +261,8 @@ class ChromeTest(unittest.TestCase):
 
         hotel_list = driver.find_element_by_xpath("//div[@data-block-id='hotel_list']")
         self.assertIsNotNone(hotel_list)
-        show_price_button = driver.find_element_by_xpath("//button[@class='sr-cta-button-row sr-cta-button-bottom-spacing sr-cta-button-top-spacing']")
+
+        show_price_button = driver.find_element_by_xpath("//div[@class='sr-cta-button-row sr-cta-button-bottom-spacing sr-cta-button-top-spacing']")
         show_price_button.click()
         time.sleep(1)
         driver.find_element_by_xpath(
@@ -267,16 +271,13 @@ class ChromeTest(unittest.TestCase):
         show_price_button.click()
         price = wait.until(
             EC.visibility_of_element_located(
-                (By.XPATH,
-                 "//div[@class='js_rackrate_animation_anchor smart_price_style gray-icon b_bigger_tag animated']")
+                (By.CSS_SELECTOR,
+                 "div.js_rackrate_animation_anchor.smart_price_style.gray-icon.b_bigger_tag.animated")
             ))
         self.assertIsNotNone(price)
 
-    def tearDown(self):
-        self.driver.close()
-
-class FirefoxTest(unittest.TestCase):
-    pass
+    # def tearDown(self):
+    #     self.driver.close()
 
 if __name__ == "__main__":
     unittest.main()
